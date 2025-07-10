@@ -21,12 +21,14 @@ export default function SignInPage() {
   useEffect(() => {
     setMounted(true)
     const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    setIsLocalhost(isLocal)
+    const forceProduction = process.env.NEXT_PUBLIC_FORCE_PRODUCTION_MODE === "true"
+    setIsLocalhost(isLocal && !forceProduction)
 
     console.log("Sign-in page loaded:", {
       restaurant,
       table,
       isLocal,
+      forceProduction,
       currentUrl: window.location.href,
     })
   }, [restaurant, table])
