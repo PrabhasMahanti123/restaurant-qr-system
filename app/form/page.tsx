@@ -19,6 +19,8 @@ export default function FeedbackForm() {
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [isLoading, setIsLoading] = useState(false) // Declare isLoading variable
+  const [step, setStep] = useState(1)
+  const totalSteps = 3
 
   const restaurant = searchParams.get("restaurant") || ""
   const table = searchParams.get("table") || ""
@@ -121,126 +123,159 @@ export default function FeedbackForm() {
           <CardHeader>
             <CardTitle className="text-2xl">Share Your Experience</CardTitle>
             <CardDescription>Help us improve by sharing your feedback. You might win exciting rewards!</CardDescription>
+            {/* Progress Indicator */}
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <span className="text-sm font-medium text-emerald-700">Step {step} of {totalSteps}</span>
+              <div className="flex gap-1 ml-2">
+                {[1,2,3].map((s) => (
+                  <span key={s} className={`w-3 h-3 rounded-full ${step === s ? 'bg-emerald-500' : 'bg-emerald-200'}`}></span>
+                ))}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="age">Age *</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    min="13"
-                    max="120"
-                    value={formData.age}
-                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Gender *</Label>
-                <RadioGroup
-                  value={formData.gender}
-                  onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                  className="flex space-x-6 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="male" id="male" />
-                    <Label htmlFor="male">Male</Label>
+              {/* Step 1: Basic Info */}
+              {step === 1 && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">Full Name *</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="age">Age *</Label>
+                      <Input
+                        id="age"
+                        type="number"
+                        min="13"
+                        max="120"
+                        value={formData.age}
+                        onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="female" id="female" />
-                    <Label htmlFor="female">Female</Label>
+                  <div>
+                    <Label>Gender *</Label>
+                    <RadioGroup
+                      value={formData.gender}
+                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
+                      className="flex space-x-6 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="male" id="male" />
+                        <Label htmlFor="male">Male</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="female" id="female" />
+                        <Label htmlFor="female">Female</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="other" id="other" />
+                        <Label htmlFor="other">Other</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="other" id="other" />
-                    <Label htmlFor="other">Other</Label>
+                </>
+              )}
+              {/* Step 2: Rating & Review */}
+              {step === 2 && (
+                <>
+                  <div>
+                    <Label htmlFor="rating">Overall Rating *</Label>
+                    <Select value={formData.rating} onValueChange={(value) => setFormData({ ...formData, rating: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Rate your experience" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">⭐⭐⭐⭐⭐ Excellent</SelectItem>
+                        <SelectItem value="4">⭐⭐⭐⭐ Very Good</SelectItem>
+                        <SelectItem value="3">⭐⭐⭐ Good</SelectItem>
+                        <SelectItem value="2">⭐⭐ Fair</SelectItem>
+                        <SelectItem value="1">⭐ Poor</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                </RadioGroup>
-              </div>
-
-              <div>
-                <Label htmlFor="rating">Overall Rating *</Label>
-                <Select value={formData.rating} onValueChange={(value) => setFormData({ ...formData, rating: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Rate your experience" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">⭐⭐⭐⭐⭐ Excellent</SelectItem>
-                    <SelectItem value="4">⭐⭐⭐⭐ Very Good</SelectItem>
-                    <SelectItem value="3">⭐⭐⭐ Good</SelectItem>
-                    <SelectItem value="2">⭐⭐ Fair</SelectItem>
-                    <SelectItem value="1">⭐ Poor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="review">Your Review *</Label>
-                <Textarea
-                  id="review"
-                  placeholder="Tell us about your experience..."
-                  value={formData.review}
-                  onChange={(e) => setFormData({ ...formData, review: e.target.value })}
-                  required
-                  rows={4}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="visit-frequency">How often do you visit us?</Label>
-                <Select
-                  value={formData.visitFrequency}
-                  onValueChange={(value) => setFormData({ ...formData, visitFrequency: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="first-time">First time</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="occasionally">Occasionally</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Would you recommend us to friends?</Label>
-                <RadioGroup
-                  value={formData.recommendation}
-                  onValueChange={(value) => setFormData({ ...formData, recommendation: value })}
-                  className="flex space-x-6 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="rec-yes" />
-                    <Label htmlFor="rec-yes">Yes</Label>
+                  <div>
+                    <Label htmlFor="review">Your Review *</Label>
+                    <Textarea
+                      id="review"
+                      placeholder="Tell us about your experience..."
+                      value={formData.review}
+                      onChange={(e) => setFormData({ ...formData, review: e.target.value })}
+                      required
+                      rows={4}
+                    />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="rec-no" />
-                    <Label htmlFor="rec-no">No</Label>
+                </>
+              )}
+              {/* Step 3: Visit Frequency & Recommendation */}
+              {step === 3 && (
+                <>
+                  <div>
+                    <Label htmlFor="visit-frequency">How often do you visit us?</Label>
+                    <Select
+                      value={formData.visitFrequency}
+                      onValueChange={(value) => setFormData({ ...formData, visitFrequency: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="first-time">First time</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="occasionally">Occasionally</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="maybe" id="rec-maybe" />
-                    <Label htmlFor="rec-maybe">Maybe</Label>
+                  <div>
+                    <Label>Would you recommend us to friends?</Label>
+                    <RadioGroup
+                      value={formData.recommendation}
+                      onValueChange={(value) => setFormData({ ...formData, recommendation: value })}
+                      className="flex space-x-6 mt-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="rec-yes" />
+                        <Label htmlFor="rec-yes">Yes</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="rec-no" />
+                        <Label htmlFor="rec-no">No</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="maybe" id="rec-maybe" />
+                        <Label htmlFor="rec-maybe">Maybe</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                </RadioGroup>
+                </>
+              )}
+              {/* Navigation Buttons */}
+              <div className="flex justify-between mt-8">
+                {step > 1 && (
+                  <Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
+                    Back
+                  </Button>
+                )}
+                {step < totalSteps && (
+                  <Button type="button" onClick={() => setStep(step + 1)}>
+                    Next
+                  </Button>
+                )}
+                {step === totalSteps && (
+                  <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                    {isLoading ? "Submitting..." : "Submit Feedback"}
+                  </Button>
+                )}
               </div>
-
-              <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                {isLoading ? "Submitting..." : "Submit Feedback"}
-              </Button>
             </form>
           </CardContent>
         </Card>
