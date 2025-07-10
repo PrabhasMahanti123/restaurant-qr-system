@@ -92,20 +92,14 @@ export default function SignInPage() {
               </div>
             )}
 
-            {isLocalhost ? (
+            {/* Only show this info box in localhost/dev mode */}
+            {isLocalhost && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-start space-x-2">
                 <Info className="w-4 h-4 text-green-500 mt-0.5" />
                 <div className="text-sm text-green-700">
                   <p className="font-medium mb-1">✅ Development Mode Active</p>
                   <p>Using demo authentication for local testing.</p>
                 </div>
-              </div>
-            ) : (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start space-x-2">
-                <AlertCircle className="w-4 h-4 text-yellow-500 mt-0.5" />
-                <p className="text-sm text-yellow-700">
-                  Google OAuth is not configured for localhost. Use demo mode for testing.
-                </p>
               </div>
             )}
 
@@ -119,6 +113,7 @@ export default function SignInPage() {
             </div>
 
             <div className="space-y-3">
+              {/* Show demo mode button only on localhost, otherwise only Google sign-in */}
               {isLocalhost ? (
                 <Button
                   onClick={handleDemoMode}
@@ -130,20 +125,11 @@ export default function SignInPage() {
                   {isLoading ? "Loading..." : "Continue with Demo Mode"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-              ) : (
-                <Button onClick={handleGoogleSignIn} disabled={isLoading} className="w-full" size="lg">
-                  <Chrome className="w-5 h-5 mr-2" />
-                  {isLoading ? "Signing in..." : "Continue with Google"}
-                </Button>
-              )}
-
-              {/* Fallback demo mode button for production */}
-              {!isLocalhost && (
-                <Button onClick={handleDemoMode} variant="outline" className="w-full bg-transparent" size="lg">
-                  <User className="w-5 h-5 mr-2" />
-                  Use Demo Mode Instead
-                </Button>
-              )}
+              ) : null}
+              <Button onClick={handleGoogleSignIn} disabled={isLoading} className="w-full" size="lg">
+                <Chrome className="w-5 h-5 mr-2" />
+                {isLoading ? "Signing in..." : "Continue with Google"}
+              </Button>
             </div>
 
             {/* Debug info */}
